@@ -3,65 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Kompas: Zjistěte svůj Archetyp</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>AI Kompas: Zjistěte svůj Archetyp | AI Workshop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
+        /* --- STYLES INSPIRED BY licence.html --- */
         :root {
-            --primary-color: #4A90E2; --primary-color-light: #E9F2FC; --dark-color: #222; --light-color: #fff;
-            --gray-color: #f4f4f4; --text-color: #333; --muted-color: #666; --border-color: #ddd;
-            --border-radius: 8px; --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --primary-color: #0a2342;
+            --secondary-color: #2ca58d;
+            --text-color: #333;
+            --light-gray: #f4f4f4;
+            --white: #ffffff;
+            --border-color: #e0e0e0;
+            --box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             --ok:#28a745; --warn:#ffc107; --err:#dc3545;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--gray-color); color: var(--text-color); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; }
-        .container { width: 100%; max-width: 700px; background-color: var(--light-color); border-radius: var(--border-radius); box-shadow: var(--box-shadow); overflow: hidden; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px; /* Wider container */
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            border-top: 5px solid var(--primary-color);
+        }
         section { padding: 40px 50px; text-align: center; }
         .hidden { display: none !important; }
-        h1 { font-size: 2.4rem; margin-bottom: 15px; color: var(--dark-color); }
-        h2 { font-size: 2rem; margin-bottom: 25px; }
-        h3 { font-size: 1.5rem; margin-top: 40px; margin-bottom: 20px; border-top: 1px solid #eee; padding-top: 30px; }
-        h4 { font-size: 1.4rem; }
-        p { font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px; color: var(--muted-color); }
-        .btn { display: inline-block; background-color: var(--primary-color); color: var(--light-color); padding: 14px 28px; border: none; border-radius: var(--border-radius); font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: background-color 0.3s ease, transform 0.2s ease; }
-        .btn:hover { background-color: #357ABD; transform: translateY(-2px); }
-        .btn.secondary { background-color: #e9ecef; color: var(--dark-color); border: 1px solid #ced4da; }
+
+        /* --- TYPOGRAPHY --- */
+        h1 { font-size: 2.5em; margin-bottom: 15px; color: var(--primary-color); font-weight: 700; }
+        h2 { font-size: 2em; margin-bottom: 25px; color: var(--primary-color); }
+        h3 { font-size: 1.5em; margin-top: 40px; margin-bottom: 20px; border-top: 1px solid var(--border-color); padding-top: 30px; }
+        h4 { font-size: 1.4em; color: var(--primary-color); }
+        p { font-size: 1.1em; margin-bottom: 30px; color: #555; }
+
+        /* --- BUTTONS --- */
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: var(--white);
+            padding: 15px 35px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .btn:hover { background-color: #238c76; transform: translateY(-2px); }
+        .btn.secondary {
+             background-color: #e9ecef;
+             color: var(--primary-color);
+             box-shadow: none;
+             border: 1px solid #ced4da;
+        }
         .btn.secondary:hover { background-color: #dee2e6; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; background-color: #ccc; }
+
+        /* --- QUIZ COMPONENTS --- */
         #quiz #progress-bar { height: 8px; background-color: #e9ecef; border-radius: 99px; overflow: hidden; margin-bottom: 20px; }
-        #quiz #progress-bar > div { height: 100%; width: 0%; background-color: var(--primary-color); transition: width 0.3s ease; }
-        #quiz #step-pill { font-size: 0.9rem; color: #888; margin-bottom: 10px; font-weight: 600; }
+        #quiz #progress-bar > div { height: 100%; width: 0%; background-color: var(--secondary-color); transition: width 0.3s ease; }
+        #quiz #step-pill { font-size: 0.9rem; color: #888; margin-bottom: 10px; font-weight: 700; }
         #answers-container { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
-        .answer-btn { width: 100%; background-color: var(--light-color); color: var(--primary-color); border: 2px solid #ced4da; text-align: left; padding: 20px; font-size: 1rem; font-weight: 400; transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease; }
-        .answer-btn:hover { background-color: var(--primary-color-light); }
-        .answer-btn.selected { border-color: var(--primary-color); background-color: var(--primary-color-light); font-weight: 600; }
+        .answer-btn {
+            width: 100%;
+            background-color: var(--white);
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            text-align: left;
+            padding: 20px;
+            font-size: 1rem;
+            font-weight: 400;
+            border-radius: 8px;
+            transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+        }
+        .answer-btn:hover { background-color: #f8f9fa; transform: translateX(3px); }
+        .answer-btn.selected { border-color: var(--secondary-color); background-color: #f8f9fa; font-weight: 700; border-width: 2px; }
         #quiz-nav { display: flex; justify-content: space-between; margin-top: 30px; align-items: center; }
-        .result-card { background: var(--light-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 25px; text-align: left; margin-bottom: 20px; transition: box-shadow 0.3s ease; }
-        .result-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
-        .result-card.primary { border-left: 5px solid var(--primary-color); background-color: #f8faff; }
+
+        /* --- RESULT COMPONENTS --- */
+        .result-card {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            text-align: left;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        .result-card.primary { border-left: 5px solid var(--secondary-color); background-color: #f8f9fa; }
         .result-card .header { display: flex; align-items: center; margin-bottom: 15px; justify-content: space-between; flex-wrap: wrap; gap: 10px;}
         .result-card .header-title { display: flex; align-items: center; gap: 15px; }
-        .result-card .archetype-pill { font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-radius: 99px; background-color: var(--primary-color-light); color: var(--primary-color); border: 1px solid var(--primary-color); }
-        .result-card .logo-icon { width: 40px; height: 40px; display: grid; place-items: center; background-color: #eee; border-radius: 5px; flex-shrink: 0;}
+        .result-card .archetype-pill { font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-radius: 99px; background-color: var(--white); color: var(--secondary-color); border: 1px solid var(--secondary-color); }
+        .result-card .logo-icon { width: 40px; height: 40px; display: grid; place-items: center; background-color: #e9ecef; border-radius: 8px; flex-shrink: 0;}
         .result-card .logo-icon svg { width: 24px; height: 24px; }
         .result-card p { font-size: 1rem; margin-bottom: 10px; }
-        .result-card strong { display: block; margin-top: 15px; margin-bottom: 5px; color: var(--dark-color); }
+        .result-card strong { display: block; margin-top: 15px; margin-bottom: 5px; color: var(--primary-color); }
         .score-badge { font-size: 0.85rem; font-weight: 700; padding: 5px 10px; border-radius: 99px; color: white; }
-        .score-badge.ok { background-color: var(--ok); } .score-badge.warn { background-color: var(--warn); color: var(--dark-color); } .score-badge.err { background-color: var(--err); }
+        .score-badge.ok { background-color: var(--ok); } .score-badge.warn { background-color: var(--warn); color: var(--text-color); } .score-badge.err { background-color: var(--err); }
         .kpi-scores { display: flex; gap: 15px; font-size: 0.9rem; margin-top: 15px; flex-wrap: wrap;}
-        #secondary-results, #catalog-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        #secondary-results, #catalog-list { display: grid; grid-template-columns: 1fr; gap: 20px; }
         #catalog-toggle { margin: 20px 0; }
-        #newsletter { background-color: var(--gray-color); }
+        
+        /* --- NEWSLETTER & FOOTER --- */
+        #newsletter { background-color: var(--light-gray); }
         #newsletter-form { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-        #newsletter-form input { padding: 14px; font-size: 1rem; border-radius: var(--border-radius); border: 1px solid #ccc; width: 100%; max-width: 300px; }
+        #newsletter-form input { padding: 14px; font-size: 1rem; border-radius: 8px; border: 1px solid #ccc; width: 100%; max-width: 350px; }
         #newsletter-status { margin-top: 15px; font-size: 0.9rem; height: 20px; }
         .status-ok { color: var(--ok); } .status-err { color: var(--err); }
-        footer { padding: 20px; text-align: center; font-size: 0.8rem; color: #aaa; background: var(--dark-color); }
+        footer { background-color: var(--primary-color); color: rgba(255, 255, 255, 0.8); padding: 20px; text-align: center; font-size: 0.9em; }
+        
         @media (max-width: 600px) {
             section { padding: 30px 20px; }
-            h1 { font-size: 2rem; } h2 { font-size: 1.5rem; }
-            #secondary-results, #catalog-list { grid-template-columns: 1fr; }
+            h1 { font-size: 2em; } h2 { font-size: 1.5em; }
             #newsletter-form { flex-direction: column; }
             #newsletter-form input { max-width: 100%; }
         }
@@ -112,7 +180,9 @@
             <p id="newsletter-status" role="status" aria-live="polite"></p>
         </section>
     </main>
-    <footer>Běží lokálně ve vašem prohlížeči. Žádná citlivá data neodesíláme.</footer>
+    <footer>
+        <p>&copy; 2025 Mgr. Gabriel Kožík. Všechna práva vyhrazena.</p>
+    </footer>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const JSON_PATH = "./ai_tools.json";
@@ -166,31 +236,11 @@
         ];
 
         const WEIGHTS = {
-            Q1: { // Cíl
-                A: { chatgpt: 3, gemini: 2, claude: 1 },
-                B: { perplexity: 3, gemini: 2, grok: 2, claude: 1 },
-                C: { claude: 3, chatgpt: 2, gemini: 1 }
-            },
-            Q2: { // Zdroje
-                A: { perplexity: 3, grok: 3, gemini: 1 },
-                B: { claude: 3, gemini: 2, chatgpt: 2 },
-                C: { gemini: 3, chatgpt: 2, perplexity: 1 }
-            },
-            Q3: { // Riziko
-                A: { chatgpt: 3, grok: 2 },
-                B: { gemini: 3, claude: 2, chatgpt: 1 },
-                C: { perplexity: 3, claude: 2, gemini: 1 }
-            },
-            Q4: { // Styl
-                A: { chatgpt: 3, grok: 1 },
-                B: { gemini: 3, perplexity: 2, claude: 1 },
-                C: { claude: 3, chatgpt: 1, gemini: 1 }
-            },
-            Q5: { // Technologie
-                A: { perplexity: 3, gemini: 2 },
-                B: { chatgpt: 3, gemini: 2, claude: 1 },
-                C: { claude: 3, chatgpt: 2, grok: 1 }
-            }
+            Q1: { A: { chatgpt: 3, gemini: 2, claude: 1 }, B: { perplexity: 3, gemini: 2, grok: 2, claude: 1 }, C: { claude: 3, chatgpt: 2, gemini: 1 } },
+            Q2: { A: { perplexity: 3, grok: 3, gemini: 1 }, B: { claude: 3, gemini: 2, chatgpt: 2 }, C: { gemini: 3, chatgpt: 2, perplexity: 1 } },
+            Q3: { A: { chatgpt: 3, grok: 2 }, B: { gemini: 3, claude: 2, chatgpt: 1 }, C: { perplexity: 3, claude: 2, gemini: 1 } },
+            Q4: { A: { chatgpt: 3, grok: 1 }, B: { gemini: 3, perplexity: 2, claude: 1 }, C: { claude: 3, chatgpt: 1, gemini: 1 } },
+            Q5: { A: { perplexity: 3, gemini: 2 }, B: { chatgpt: 3, gemini: 2, claude: 1 }, C: { claude: 3, chatgpt: 2, grok: 1 } }
         };
 
         const state = { tools: [], answers: {}, qIndex: 0 };
@@ -396,3 +446,4 @@
     </script>
 </body>
 </html>
+
