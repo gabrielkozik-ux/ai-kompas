@@ -69,7 +69,7 @@
         .modal-overlay.visible { opacity: 1; visibility: visible; }
         .modal-container { background: var(--white); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; transform: scale(0.95); transition: transform 0.3s ease; }
         .modal-overlay.visible .modal-container { transform: scale(1); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid var(--border-color); background: var(--light-gray); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid var(--border-color); background: var(--light-gray); position: sticky; top: 0; z-index: 1; }
         .modal-header h2 { margin: 0; font-size: 1.5em; }
         .modal-close-btn { background: none; border: none; font-size: 1.8em; cursor: pointer; color: #888; }
         .modal-content { padding: 25px; }
@@ -130,7 +130,6 @@
         <p>&copy; 2025 Mgr. Gabriel Kožík. Všechna práva vyhrazena.</p>
     </footer>
 
-    <!-- MODAL STRUCTURE -->
     <div id="tool-modal" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
@@ -231,7 +230,7 @@
                     } else {
                         state.answers[q.key] = key;
                     }
-                    renderQuestion();
+                    renderQuestion(); // Re-render to update all buttons for single choice
                 });
                 $answersContainer.appendChild(div);
             });
@@ -241,7 +240,22 @@
         function updateNavButtons() { const qKey = quizQuestions[state.qIndex].key; const answers = state.answers[qKey]; const hasAnswer = Array.isArray(answers) ? answers.length > 0 : answers !== null; $backBtn.disabled = state.qIndex === 0; $nextBtn.classList.toggle('hidden', state.qIndex === quizQuestions.length - 1); $nextBtn.disabled = !hasAnswer; $finishBtn.classList.toggle('hidden', state.qIndex !== quizQuestions.length - 1); $finishBtn.disabled = !hasAnswer; }
         function onFinish() { const result = computeScore(state.answers, state.tools); renderResults(result); $quiz.classList.add('hidden'); $results.classList.remove('hidden'); $newsletter.classList.remove('hidden'); focusH2($('#results-title')); }
         function computeScore(answers, tools) { const score = {}; tools.forEach(t => score[t.id] = 0); for (const [qKey, ansValue] of Object.entries(answers)) { const ansKeys = Array.isArray(ansValue) ? ansValue : (ansValue ? [ansValue] : []); for (const ansKey of ansKeys) { const mapping = WEIGHTS[qKey]?.[ansKey] || {}; for (const [toolId, points] of Object.entries(mapping)) { if (score[toolId] !== undefined) score[toolId] += points; } } } const enriched = Object.entries(score).map(([id, sc]) => ({ id, score: sc, fit: Number((tools.find(t => t.id === id) || {}).fit_weight ?? 0), tool: tools.find(t => t.id === id) || {} })); enriched.sort((a, b) => (b.score - a.score) || (b.fit - a.fit) || a.id.localeCompare(b.id)); return enriched; }
-        function renderResults(sorted) { if (!sorted || sorted.length === 0) { $primaryResult.innerHTML = `<p class="status-err">Nepodařilo se vyhodnotit výsledek.</p>`; return; } const [primary, ...secondary] = sorted; $primaryResult.innerHTML = createToolCard(primary, true); $secondaryResults.innerHTML = secondary.slice(0, 2).map(item => createToolCard(item, false)).join(''); $catalogList.innerHTML = sorted.map(item => createToolCard(item, false)).join(''); }
+        
+        function renderResults(sorted) {
+            if (!sorted || sorted.length === 0) {
+                $primaryResult.innerHTML = `<p class="status-err">Nepodařilo se vyhodnotit výsledek.</p>`;
+                return;
+            }
+            const [primary, ...secondary] = sorted;
+            
+            $primaryResult.replaceChildren(createToolCard(primary, true));
+            
+            const secondaryElements = secondary.slice(0, 2).map(item => createToolCard(item, false));
+            $secondaryResults.replaceChildren(...secondaryElements);
+
+            const catalogElements = sorted.map(item => createToolCard(item, false));
+            $catalogList.replaceChildren(...catalogElements);
+        }
         
         function createToolCard(item, isPrimary) {
             const t = item.tool || {};
@@ -260,7 +274,7 @@
                 const toolData = state.tools.find(tool => tool.id === toolId);
                 showToolModal(toolData);
             });
-            return card.outerHTML;
+            return card;
         }
 
         function showToolModal(tool) {
@@ -289,4 +303,3 @@
     </script>
 </body>
 </html>
-
