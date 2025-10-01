@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Kompas pro živnostníky</title>
+  <meta name="description" content="Rychlý kvíz, který vám doporučí nejvhodnější AI nástroj pro vaše podnikání." />
+  <style>
+    :root{
+      --max: 760px;
+      --gap: 16px;
+      --radius: 14px;
+      --bg: #0b0c10;
+      --panel: #12141a;
+      --panel-2: #181b22;
+      --text: #e8ebf1;
+      --muted: #b7c0d0;
+      --brand: #5ac1ff;
+      --brand-2:#8de8ff;
+      --ok:#4cd964;
+      --warn:#ffcc00;
+      --err:#ff6b6b;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f6f7fb; --panel:#fff; --panel-2:#f2f4f8; --text:#11141a; --muted:#4b5563; --shadow: 0 10px 24px rgba(0,0,0,.08);
+      }
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background: radial-gradient(1200px 600px at 50% -100px, rgba(90,193,255,.20), transparent 60%), var(--bg);
+      line-height:1.5;
+    }
+    .wrap{
+      max-width:var(--max);
+      margin-inline:auto;
+      padding: clamp(16px, 3vw, 24px);
+    }
+    header{display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;}
+    .logo{font-weight:800; letter-spacing:.3px;}
+    .badge{font-size:.78rem; color:var(--muted)}
+    .card{
+      background:linear-gradient(180deg,var(--panel),var(--panel-2));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding: clamp(16px, 2.2vw, 22px);
+    }
+    .cta{
+      display:inline-flex; align-items:center; gap:10px;
+      background: linear-gradient(135deg,var(--brand),var(--brand-2));
+      color:#001018; border:0; border-radius:12px; padding:14px 18px; font-weight:700; cursor:pointer;
+      transition:transform .06s ease, filter .2s ease;
+    }
+    .cta:focus-visible{outline:3px solid rgba(90,193,255,.65); outline-offset:2px}
+    .cta:hover{filter:saturate(1.05) brightness(1.03)}
+    .cta:active{transform: translateY(1px)}
+    .muted{color:var(--muted)}
+    .hidden{display:none !important}
+    h1{margin:0 0 10px; font-size: clamp(1.5rem, 2.4vw + .8rem, 2.1rem)}
+    h2{margin:0 0 8px; font-size: clamp(1.15rem, 1.8vw + .6rem, 1.5rem)}
+    p{margin:0 0 10px}
+    .grid{display:grid; gap:var(--gap)}
+    .grid.cols-2{grid-template-columns: 1fr; }
+    @media (min-width:720px){ .grid.cols-2{grid-template-columns: 1fr 1fr;} }
+    .progress{
+      height:10px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden;
+      border:1px solid rgba(255,255,255,.06); margin-bottom:14px;
+    }
+    .progress > div{height:100%; width:0%; background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+    .answers{display:grid; gap:10px; margin-top:12px}
+    .btn{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      background: rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+      border-radius:12px; padding:12px 14px; color:inherit; cursor:pointer;
+      transition: border-color .15s ease, background .15s ease, transform .06s ease;
+      text-align:left;
+    }
+    .btn:hover{background:rgba(255,255,255,.06)}
+    .btn.selected{border-color:var(--brand); background:rgba(90,193,255,.12)}
+    .btn:focus-visible{outline:3px solid rgba(90,193,255,.65); outline-offset:2px}
+    .nav{
+      display:flex; gap:10px; margin-top:12px; justify-content:space-between; flex-wrap:wrap;
+    }
+    .nav .secondary{
+      background:transparent; border:1px solid rgba(255,255,255,.15); color:inherit; padding:10px 14px; border-radius:10px; cursor:pointer;
+    }
+    .nav .secondary[disabled]{opacity:.5; cursor:not-allowed}
+    .pill{font-size:.75rem; padding:4px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.12); color:var(--muted)}
+    .tool-card{display:flex; flex-direction:column; gap:8px}
+    .tool-head{display:flex; align-items:center; gap:10px; justify-content:space-between}
+    .score-badges{display:flex; gap:6px; flex-wrap:wrap}
+    .kpi{font-variant-numeric:tabular-nums}
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .err{color:var(--err)}
+    .small{font-size:.9rem}
+    .foot{margin-top:24px; font-size:.85rem}
+    form.news{display:grid; gap:10px; grid-template-columns: 1fr auto; align-items:center}
+    form.news input[type="email"]{
+      width:100%; border-radius:10px; padding:12px 14px; border:1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.04); color:inherit;
+    }
+    .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;}
+    .pill-wrap{display:flex; gap:8px; flex-wrap:wrap}
+    a.inline{color:var(--brand-2); text-decoration:underline dotted}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header aria-label="Záhlaví">
+      <div class="logo">⚑ AI Kompas</div>
+      <div class="badge">verze 1.0 • čistý Vanilla JS</div>
+    </header>
+
+    <!-- INTRO -->
+    <section id="intro" class="card" aria-labelledby="intro-title">
+      <h1 id="intro-title">Najděte si AI nástroj pro váš byznys do 60 vteřin</h1>
+      <p class="muted">Krátký kvíz se 3 otázkami. Bez registrace. Výsledek s jasným doporučením a tipy, jak začít.</p>
+      <div style="margin-top:14px">
+        <button id="startBtn" class="cta" aria-describedby="intro-desc">▶ Spustit kvíz</button>
+        <div id="intro-desc" class="sr-only">Začne se první otázkou ze tří.</div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" class="card hidden" aria-labelledby="quiz-title" aria-live="polite">
+      <div class="progress" aria-hidden="true"><div id="progressBar"></div></div>
+      <div class="pill-wrap" style="margin-bottom:8px">
+        <span id="stepPill" class="pill">Krok 1 / 3</span>
+      </div>
+      <h2 id="quiz-title">Otázka</h2>
+      <p id="quiz-desc" class="muted small">Vyberte jednu odpověď.</p>
+      <div class="answers" role="group" aria-labelledby="quiz-title" id="answers"></div>
+      <div class="nav">
+        <button id="backBtn" class="secondary" aria-label="Zpět na předchozí otázku">← Zpět</button>
+        <div style="display:flex; gap:10px">
+          <button id="nextBtn" class="secondary" disabled>Další →</button>
+          <button id="finishBtn" class="cta" disabled>Dokončit ✓</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="results" class="hidden" aria-labelledby="res-title">
+      <!-- Primary result -->
+      <article id="primaryResult" class="card" style="margin-bottom:16px">
+        <h2 id="res-title">Doporučený nástroj</h2>
+        <div id="primaryContent" class="tool-card"></div>
+      </article>
+
+      <!-- Secondary cards -->
+      <div class="grid cols-2" id="secondaryZone" aria-label="Další vhodné nástroje"></div>
+
+      <!-- Catalog toggle -->
+      <div style="margin:16px 0">
+        <button id="showAllBtn" class="secondary">Zobrazit přehled všech nástrojů</button>
+      </div>
+
+      <!-- Catalog -->
+      <section id="catalog" class="card hidden" aria-label="Přehled všech nástrojů">
+        <h2>Všechny nástroje</h2>
+        <div id="catalogList" class="grid cols-2" style="margin-top:10px"></div>
+      </section>
+    </section>
+
+    <!-- NEWSLETTER -->
+    <section id="newsletter" class="card hidden" aria-labelledby="news-title" style="margin-top:16px">
+      <h2 id="news-title">Chcete vědět víc?</h2>
+      <p class="muted small">1× měsíčně pošleme praktické tipy pro malé firmy. Kdykoli se můžete odhlásit.</p>
+      <form id="newsForm" class="news" novalidate>
+        <label class="sr-only" for="email">E-mail</label>
+        <input id="email" type="email" placeholder="vas@email.cz" autocomplete="email" required />
+        <button class="cta" type="submit">Odebírat</button>
+      </form>
+      <p id="newsStatus" class="small" role="status" aria-live="polite" style="margin-top:6px"></p>
+    </section>
+
+    <footer class="foot muted">
+      Běží lokálně ve vašem prohlížeči. Žádná citlivá data neodesíláme. •
+      <span class="small">Tip: po výsledku zkuste „Zobrazit přehled všech nástrojů“.</span>
+    </footer>
+  </div>
+
+  <script>
+    /* ---------------------------------------------------------
+       AI Kompas — single-file app (Vanilla JS)
+       ---------------------------------------------------------
+       - Načte data z ai_tools.json (ve stejném adresáři).
+       - Položí 3 otázky (multiple choice).
+       - Zváží odpovědi -> spočítá skóre pro nástroje.
+       - Zobrazí primární doporučení + 2 alternativy.
+       - Nabídne přehled všech nástrojů + newsletter.
+       --------------------------------------------------------- */
+
+    // === Konfigurace ===
+    const NEWSLETTER_ENDPOINT = ""; // např. "https://formspree.io/f/xxxx" (prázdné => uloží do localStorage)
+    const JSON_PATH = "ai_tools.json";
+
+    // Otázky (3) + možnosti (A,B,C)
+    const quizQuestions = [
+      {
+        key: "Q1",
+        title: "Co primárně chcete pomocí AI zlepšit?",
+        answers: {
+          A: "Marketing a tvorbu obsahu (texty, nápady, posty)",
+          B: "Analýzu, práci se zdroji a faktické odpovědi",
+          C: "Automatizaci úkolů a propojení s dalšími nástroji"
+        }
+      },
+      {
+        key: "Q2",
+        title: "Jak moc dbáte na ověřitelnost a zdrojování?",
+        answers: {
+          A: "Je to fajn, ale rychlost je důležitější",
+          B: "Důležité, chci kontrolu a odkazy na zdroje",
+          C: "Kritické, bez ověření nepoužitelné"
+        }
+      },
+      {
+        key: "Q3",
+        title: "Jaké výstupy vám víc sedí?",
+        answers: {
+          A: "Kreativní, odvážné nápady",
+          B: "Vyvážené, spolehlivé a srozumitelné",
+          C: "Konzistentní, formální a dobře integrovatelné"
+        }
+      }
+    ];
+
+    // Váhy pro mapování odpovědí -> skóre jednotlivých nástrojů.
+    // Nástroje očekávané v JSON: chatgpt, gemini, claude, perplexity, grok
+    const WEIGHTS = {
+      Q1: {
+        A: { chatgpt: 3, claude: 2, gemini: 2 },               // Marketing
+        B: { perplexity: 3, claude: 2, gemini: 2, grok: 2 },   // Analýza
+        C: { claude: 3, chatgpt: 2, gemini: 1, grok: 1 }       // Automatizace/propojení
+      },
+      Q2: {
+        A: { chatgpt: 2, gemini: 2 },                          // Rychlost > zdroje
+        B: { claude: 2, gemini: 2, perplexity: 1 },            // Důležité
+        C: { perplexity: 3, grok: 2 }                          // Kritické
+      },
+      Q3: {
+        A: { chatgpt: 2, claude: 2, gemini: 1 },               // Kreativní
+        B: { claude: 2, chatgpt: 1, gemini: 1 },               // Vyvážené
+        C: { claude: 2, gemini: 1, grok: 1 }                   // Konzistentní & integrace
+      }
+    };
+
+    // === Stav aplikace ===
+    const state = {
+      tools: [],          // načtené nástroje z JSON
+      answers: {},        // např. { Q1: "A", Q2: "B", Q3: "C" }
+      qIndex: 0           // index otázky (0..2)
+    };
+
+    // === Elementy z DOM ===
+    const $intro = document.getElementById("intro");
+    const $quiz = document.getElementById("quiz");
+    const $results = document.getElementById("results");
+    const $newsletter = document.getElementById("newsletter");
+
+    const $startBtn = document.getElementById("startBtn");
+    const $backBtn = document.getElementById("backBtn");
+    const $nextBtn = document.getElementById("nextBtn");
+    const $finishBtn = document.getElementById("finishBtn");
+    const $answers = document.getElementById("answers");
+    const $quizTitle = document.getElementById("quiz-title");
+    const $progressBar = document.getElementById("progressBar");
+    const $stepPill = document.getElementById("stepPill");
+
+    const $primaryContent = document.getElementById("primaryContent");
+    const $secondaryZone = document.getElementById("secondaryZone");
+    const $showAllBtn = document.getElementById("showAllBtn");
+    const $catalog = document.getElementById("catalog");
+    const $catalogList = document.getElementById("catalogList");
+
+    const $newsForm = document.getElementById("newsForm");
+    const $newsStatus = document.getElementById("newsStatus");
+    const $email = document.getElementById("email");
+
+    // === Inicializace ===
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const res = await fetch(JSON_PATH, {cache: "no-cache"});
+        if(!res.ok) throw new Error(`Chyba načítání dat (${res.status})`);
+        const data = await res.json();
+        state.tools = (data.tools || []).map(t => ({...t}));
+        if(state.tools.length === 0) throw new Error("Soubor ai_tools.json neobsahuje žádné nástroje.");
+      } catch (err) {
+        // Fallback UI, když se nepodaří načíst JSON
+        console.error(err);
+        $intro.querySelector("p.muted").innerText = "Nepodařilo se načíst data o nástrojích. Zkontrolujte prosím soubor ai_tools.json a obnovte stránku.";
+        // Nezakazujeme start, ať si lze projít kvíz, ale výsledky budou omezené.
+      }
+
+      // Event listeners
+      $startBtn.addEventListener("click", startQuiz);
+      $backBtn.addEventListener("click", onBack);
+      $nextBtn.addEventListener("click", onNext);
+      $finishBtn.addEventListener("click", onFinish);
+      $showAllBtn.addEventListener("click", () => {
+        $catalog.classList.toggle("hidden");
+        $showAllBtn.textContent = $catalog.classList.contains("hidden")
+          ? "Zobrazit přehled všech nástrojů"
+          : "Skrýt přehled";
+      });
+
+      // Newsletter
+      $newsForm.addEventListener("submit", onNewsletterSubmit);
+
+      // Klávesnice: Enter -> další, Esc -> zpět (jen během kvízu)
+      document.addEventListener("keydown", (e) => {
+        const inQuiz = !$quiz.classList.contains("hidden");
+        if(!inQuiz) return;
+        if(e.key === "Enter"){
+          if(!$nextBtn.disabled) onNext();
+          else if(!$finishBtn.disabled) onFinish();
+        }
+        if(e.key === "Escape"){
+          onBack();
+        }
+      });
+    });
+
+    // === Funkce kvízu ===
+    function startQuiz(){
+      $intro.classList.add("hidden");
+      $quiz.classList.remove("hidden");
+      state.qIndex = 0;
+      state.answers = {};
+      renderQuestion();
+      focusH2($quizTitle);
+    }
+
+    function renderQuestion(){
+      const q = quizQuestions[state.qIndex];
+      $quizTitle.textContent = q.title;
+
+      // Progress bar + pill
+      const step = state.qIndex + 1;
+      const pct = Math.round((step / quizQuestions.length) * 100);
+      $progressBar.style.width = pct + "%";
+      $stepPill.textContent = `Krok ${step} / ${quizQuestions.length}`;
+
+      // Odpovědi
+      $answers.innerHTML = "";
+      const selected = state.answers[q.key];
+
+      Object.entries(q.answers).forEach(([key, label]) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn";
+        btn.setAttribute("data-key", key);
+        btn.innerHTML = `<span><strong>${key}.</strong> ${label}</span>`;
+        if(selected === key) btn.classList.add("selected");
+        btn.addEventListener("click", () => {
+          // Toggle výběru (vždy jen jeden)
+          state.answers[q.key] = key;
+          // Refresh selected UI
+          [...$answers.querySelectorAll(".btn")].forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          updateNavButtons();
+        });
+        $answers.appendChild(btn);
+      });
+
+      updateNavButtons();
+    }
+
+    function updateNavButtons(){
+      const isFirst = state.qIndex === 0;
+      const isLast = state.qIndex === quizQuestions.length - 1;
+      const hasAnswer = !!state.answers[quizQuestions[state.qIndex].key];
+
+      $backBtn.disabled = isFirst;
+      $nextBtn.disabled = isLast || !hasAnswer;
+      $finishBtn.disabled = !isLast || !hasAnswer;
+    }
+
+    function onBack(){
+      if(state.qIndex === 0) return;
+      state.qIndex -= 1;
+      renderQuestion();
+      focusH2($quizTitle);
+    }
+
+    function onNext(){
+      const q = quizQuestions[state.qIndex];
+      if(!state.answers[q.key]) return; // žádná odpověď
+      if(state.qIndex < quizQuestions.length - 1){
+        state.qIndex += 1;
+        renderQuestion();
+        focusH2($quizTitle);
+      }
+    }
+
+    function onFinish(){
+      // Spočítat skóre
+      const result = computeScore(state.answers, state.tools);
+      // Render výsledků
+      renderResults(result);
+      // Přepnout sekce
+      $quiz.classList.add("hidden");
+      $results.classList.remove("hidden");
+      $newsletter.classList.remove("hidden");
+      // Fokus na nadpis výsledků
+      const resTitle = document.getElementById("res-title");
+      focusH2(resTitle);
+    }
+
+    // === Skóre a doporučení ===
+    function computeScore(answers, tools){
+      // Inicializuj skóre pro nástroje, které máme v JSON
+      const score = {};
+      (tools && tools.length ? tools : getFallbackTools()).forEach(t => score[t.id] = 0);
+
+      // Aplikuj váhy pro každou odpověď
+      for(const [qKey, ansKey] of Object.entries(answers)){
+        const mapping = WEIGHTS[qKey]?.[ansKey] || {};
+        for(const [toolId, points] of Object.entries(mapping)){
+          if(score[toolId] === undefined) continue; // nástroj není v datech
+          score[toolId] += points;
+        }
+      }
+
+      // Připrav seřazené pole s metadata (fit_weight pro tie-break)
+      const enriched = Object.entries(score).map(([id, sc]) => {
+        const meta = (tools || []).find(t => t.id === id) || {};
+        const fit = Number(meta.fit_weight ?? 0);
+        return { id, score: sc, fit, tool: meta };
+      });
+
+      enriched.sort((a,b) => {
+        if(b.score !== a.score) return b.score - a.score; // primárně skóre
+        if(b.fit !== a.fit) return b.fit - a.fit;         // pak fit_weight
+        return a.id.localeCompare(b.id);                  // nakonec abeceda
+      });
+
+      return enriched;
+    }
+
+    // === Render výsledků ===
+    function renderResults(sorted){
+      // Bez dat?
+      if(!sorted || sorted.length === 0){
+        $primaryContent.innerHTML = `<p class="err">Nepodařilo se vyhodnotit výsledek. Zkuste prosím obnovit stránku.</p>`;
+        $secondaryZone.innerHTML = "";
+        return;
+      }
+
+      const primary = sorted[0];
+      const secondary = sorted.slice(1,3);
+
+      // Primární karta
+      $primaryContent.innerHTML = renderToolCard(primary, true);
+
+      // Sekundární karty
+      $secondaryZone.innerHTML = secondary.map(item => {
+        return `<article class="card tool-card">${renderToolInner(item)}</article>`;
+      }).join("");
+
+      // Katalog všech
+      renderCatalog(sorted);
+    }
+
+    function renderCatalog(sorted){
+      const list = (sorted || []).map(item => {
+        return `<article class="card tool-card">${renderToolInner(item)}</article>`;
+      }).join("");
+      $catalogList.innerHTML = list;
+    }
+
+    function renderToolCard(item, highlight=false){
+      const inner = renderToolInner(item, highlight);
+      return inner;
+    }
+
+    function renderToolInner(item, highlight=false){
+      const t = item.tool || {};
+      const logo = t.logoUrl ? `<span class="pill">${escapeHtml(t.name?.slice(0, 1) || "AI")}</span>` : "";
+      const desc = (t.summary || t.personality || "").trim();
+      const strengths = t.strengths || {};
+      const kpi = [
+        `Mkt: <strong class="kpi">${num(strengths.marketing, "-")}/5</strong>`,
+        `Analýza: <strong class="kpi">${num(strengths.analysis, "-")}/5</strong>`,
+        `Autom.: <strong class="kpi">${num(strengths.automation, "-")}/5</strong>`
+      ].join(" · ");
+
+      const full = t.fullDescription ? `<p class="small">${escapeHtml(t.fullDescription)}</p>` : "";
+      const ideal = t.idealFor ? `<p class="small"><em>Ideální pro:</em> ${escapeHtml(t.idealFor)}</p>` : "";
+      const wof = t.watchOutFor ? `<p class="small"><em>Pozor na:</em> ${escapeHtml(t.watchOutFor)}</p>` : "";
+
+      const badge = `<span class="pill ${item.score >= 8 ? 'ok' : item.score >= 5 ? 'warn' : 'err'}">Skóre: ${item.score}</span>`;
+
+      return `
+        <div class="tool-head">
+          <div style="display:flex; align-items:center; gap:10px">
+            ${logo}
+            <h3 style="margin:0">${escapeHtml(t.name || item.id)}</h3>
+          </div>
+          ${badge}
+        </div>
+        <p class="muted small">${escapeHtml(desc)}</p>
+        ${ideal}
+        <div class="score-badges">${kpi}</div>
+        <details class="small" style="margin-top:6px">
+          <summary>Více informací</summary>
+          ${full}
+          ${wof}
+        </details>
+      `;
+    }
+
+    // === Newsletter ===
+    async function onNewsletterSubmit(e){
+      e.preventDefault();
+      $newsStatus.textContent = "";
+      const email = ($email.value || "").trim();
+
+      if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+        $newsStatus.textContent = "Zadejte prosím platný e-mail.";
+        $newsStatus.classList.remove("ok"); $newsStatus.classList.add("err");
+        return;
+      }
+
+      try{
+        if(NEWSLETTER_ENDPOINT){
+          const res = await fetch(NEWSLETTER_ENDPOINT, {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({ email, ts: new Date().toISOString(), source: "ai-kompas" })
+          });
+          if(!res.ok) throw new Error("Nepodařilo se odeslat formulář.");
+          $newsStatus.textContent = "Děkujeme! Potvrzovací e-mail by měl být za chvíli u vás.";
+        } else {
+          // Lokální uložení jako fallback
+          const key = "ai-kompas-newsletter";
+          const arr = JSON.parse(localStorage.getItem(key) || "[]");
+          arr.push({email, ts: Date.now()});
+          localStorage.setItem(key, JSON.stringify(arr));
+          $newsStatus.textContent = "Děkujeme! (Lokální uložení). Nastavte si vzdálený endpoint pro skutečné odesílání.";
+        }
+        $newsStatus.classList.remove("err"); $newsStatus.classList.add("ok");
+        $email.value = "";
+      } catch(err){
+        console.error(err);
+        $newsStatus.textContent = "Omlouváme se, došlo k chybě při odesílání.";
+        $newsStatus.classList.remove("ok"); $newsStatus.classList.add("err");
+      }
+    }
+
+    // === Pomocné funkce ===
+    function focusH2(el){
+      if(!el) return;
+      // Dočasný tabindex pro přeskok čteček / kláves
+      el.setAttribute("tabindex","-1");
+      el.focus({preventScroll:true});
+      el.scrollIntoView({behavior:"smooth", block:"start"});
+      setTimeout(()=> el.removeAttribute("tabindex"), 0);
+    }
+    function num(v, fallback="–"){ return (typeof v === "number") ? v : fallback; }
+    function escapeHtml(str=""){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function getFallbackTools(){
+      // Minimální fallback pro případ, že se nepodařilo načíst JSON.
+      return [
+        { id:"chatgpt", name:"ChatGPT", strengths:{marketing:5,analysis:4,automation:4}, summary:"Univerzální nástroj pro tvorbu obsahu a nápadů." },
+        { id:"gemini", name:"Gemini", strengths:{marketing:4,analysis:5,automation:4}, summary:"Multimodální model, silný v analýze a Workspace." },
+        { id:"claude", name:"Claude", strengths:{marketing:4,analysis:4,automation:5}, summary:"Spolehlivý pro kód a delší úkoly." },
+        { id:"perplexity", name:"Perplexity", strengths:{marketing:3,analysis:5,automation:2}, summary:"Odpovědi se zdroji, ideální pro rešerše." },
+        { id:"grok", name:"Grok", strengths:{marketing:2,analysis:5,automation:3}, summary:"Real-time data a tvrdé uvažování." }
+      ];
+    }
+  </script>
+</body>
+</html>
