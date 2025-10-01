@@ -2,13 +2,32 @@
   "tools": [
     {
       "id": "chatgpt",
-      "name": "ChatGPT (GPT-4o)",
+      "name": "ChatGPT (GPT-5)",
       "fit_weight": 5,
       "archetype": "Kreativní Univerzál",
       "summary": "Univerzální a kreativní model, skvělý pro tvorbu obsahu, brainstorming a rychlé prototypování.",
       "idealFor": "Uživatelé, kteří chtějí rychle generovat texty, nápady, obrázky a potřebují flexibilní nástroj pro různorodé úkoly.",
-      "watchOutFor": "Při požadavku na absolutní faktickou přesnost je nutná kontrola. Kreativita může někdy převážit nad doslovnou přesností.",
-      "strengths": { "marketing": 5, "analysis": 4, "automation": 4 }
+      "watchOutFor": "Při požadavku na absolutní faktickou přesnost je nutná kontrola.",
+      "strengths": { "marketing": 5, "analysis": 4, "automation": 4 },
+      "details": {
+        "key_abilities": [
+          "Jednotná architektura s automatickým přepínáním mezi rychlým a 'Thinking' režimem.",
+          "Plná multimodalita: generování a analýza textu, obrazu (DALL-E 4) a videa (Sora 2).",
+          "Agentní schopnosti pro vykonávání komplexních, vícekrokových úkolů.",
+          "Obrovské kontextové okno (až 400 000 tokenů) pro práci s rozsáhlými dokumenty."
+        ],
+        "use_cases": [
+          "Hyper-personalizace marketingových kampaní.",
+          "Kompletní tvorba obsahu včetně vizuálů a videí.",
+          "Pokročilá analýza dat (např. z Excelu) pomocí přirozeného jazyka.",
+          "Automatizace HR procesů (tvorba inzerátů, onboarding plány)."
+        ],
+        "risks": [
+          "I přes vylepšení je stále nutná lidská kontrola u fakticky citlivých úkolů.",
+          "Pro plné využití agentních schopností je nutná integrace přes API a protokol MCP."
+        ],
+        "comparison": "Je vnímán jako nejvyváženější a nejuniverzálnější model na trhu. Vyniká v hloubkovém výzkumu a má nejvyspělejší ekosystém nástrojů. Konkurence může být lepší v dílčích specializacích (např. Claude v psaní, Gemini v kontextu)."
+      }
     },
     {
       "id": "gemini",
@@ -17,8 +36,27 @@
       "archetype": "Pragmatický Analytik",
       "summary": "Multimodální model silně propojený s ekosystémem Google, excelentní v práci s daty a vlastními zdroji.",
       "idealFor": "Firmy a jednotlivci v Google Workspace, kteří potřebují analyzovat data, dokumenty a hledat strukturované odpovědi.",
-      "watchOutFor": "Kreativní výstupy mohou být někdy konzervativnější. Největší síla se projeví v propojení s dalšími Google službami.",
-      "strengths": { "marketing": 4, "analysis": 5, "automation": 4 }
+      "watchOutFor": "Kreativní výstupy mohou být někdy konzervativnější.",
+      "strengths": { "marketing": 4, "analysis": 5, "automation": 4 },
+      "details": {
+        "key_abilities": [
+          "Nativní multimodalita (zpracovává text, obraz, audio a video v jednom kroku).",
+          "Masivní kontextové okno (přes 1 milion tokenů), největší na trhu.",
+          "Pokročilé uvažování ('Thinking') pro vyšší přesnost a spolehlivost.",
+          "Bezpečná znalostní báze NotebookLM, která eliminuje halucinace."
+        ],
+        "use_cases": [
+          "Analýza extrémně dlouhých dokumentů (roční zprávy, právní spisy).",
+          "Hyperlokální průzkum trhu s využitím vlastních i veřejných zdrojů.",
+          "Vytváření interních znalostních bází a školicích materiálů (včetně podcastů a videí).",
+          "Syntéza informací ze záznamů schůzek (video i audio)."
+        ],
+        "risks": [
+          "Největší síla se projeví až v plném propojení s Google ekosystémem (Workspace).",
+          "Některé pokročilé funkce vyžadují technické nastavení přes API."
+        ],
+        "comparison": "Jeho hlavní výhodou je obrovský kontext a hluboká integrace s Google nástroji. Ideální pro firmy, které již v tomto ekosystému pracují. Oproti ChatGPT může být méně kreativní v čistě textových úlohách."
+      }
     },
     {
       "id": "claude",
@@ -26,9 +64,28 @@
       "fit_weight": 4,
       "archetype": "Pečlivý Systematik",
       "summary": "Spolehlivý a bezpečný model, vynikající v práci s dlouhými texty, dokumenty, kódem a automatizací.",
-      "idealFor": "Vývojáři, právníci a analytici, kteří potřebují zpracovat velké objemy dat, automatizovat procesy a vyžadují konzistentní výstupy.",
-      "watchOutFor": "Jeho bezpečnostní mechanismy mohou být někdy až příliš opatrné. Generování obrázků není jeho primární doménou.",
-      "strengths": { "marketing": 4, "analysis": 4, "automation": 5 }
+      "idealFor": "Vývojáři, právníci a analytici, kteří potřebují zpracovat velké objemy dat a vyžadují konzistentní a bezpečné výstupy.",
+      "watchOutFor": "Jeho bezpečnostní mechanismy mohou být někdy až příliš opatrné.",
+      "strengths": { "marketing": 4, "analysis": 4, "automation": 5 },
+      "details": {
+        "key_abilities": [
+          "Špičkové schopnosti v oblasti kódování a 'používání počítače'.",
+          "Pokročilá sada nástrojů pro vývojáře (Agent SDK) pro tvorbu vlastních agentů.",
+          "Funkce pro správu dlouhodobých úkolů (Context Editing, Memory Tool).",
+          "Silný důraz na bezpečnost a sladění s legislativou (ASL-3)."
+        ],
+        "use_cases": [
+          "Automatizace složitých, vícekrokových pracovních postupů.",
+          "Rychlé prototypování a intuitivní kódování ('Vibe Coding').",
+          "Automatizované zpracování dokumentů jako faktury a smlouvy.",
+          "Tvorba pokročilých agentů pro zákaznickou podporu."
+        ],
+        "risks": [
+          "Chybí nativní podpora pro audio a video vstupy.",
+          "Vyšší cena API oproti některým konkurentům. Může být vnímán jako 'méně spolehlivý' pro nejkritičtější logiku ve srovnání s GPT-5-Codex."
+        ],
+        "comparison": "Jeho hlavní silou je rychlost a schopnost provádět dlouhotrvající autonomní úkoly, zejména v oblasti kódování. Je to 'rychlý juniorní vývojář'. Oproti Gemini postrádá plnou multimodalitu, oproti ChatGPT může být dražší."
+      }
     },
     {
       "id": "perplexity",
@@ -37,8 +94,27 @@
       "archetype": "Důsledný Výzkumník",
       "summary": "Konverzační vyhledávač, který poskytuje odpovědi podložené citacemi a aktuálními zdroji z internetu.",
       "idealFor": "Novináři, studenti a kdokoli, kdo dělá rešerše a potřebuje maximálně ověřitelné informace s odkazy na zdroje.",
-      "watchOutFor": "Není určen pro kreativní tvorbu obsahu (např. marketingové texty). Jeho síla je v syntéze informací, ne v jejich tvorbě.",
-      "strengths": { "marketing": 3, "analysis": 5, "automation": 2 }
+      "watchOutFor": "Není určen pro kreativní tvorbu obsahu (např. marketingové texty).",
+      "strengths": { "marketing": 3, "analysis": 5, "automation": 2 },
+      "details": {
+        "key_abilities": [
+          "Funguje jako 'stroj na odpovědi', nikoli jako kreativní chatbot.",
+          "Každé tvrzení je podloženo klikatelným odkazem na zdroj pro okamžitou verifikaci.",
+          "Pokročilé rešeršní módy (Deep Research, Focus Mode) pro hloubkovou analýzu.",
+          "Ekosystém nástrojů včetně prohlížeče Comet a týmových prostorů Spaces."
+        ],
+        "use_cases": [
+          "Analýza konkurence a sledování trhu v reálném čase.",
+          "Tvorba fakticky podloženého obsahu (odborné články, analýzy).",
+          "Příprava na obchodní jednání (analýza profilu klienta).",
+          "Rychlá rešerše dlouhých smluv a finančních výkazů."
+        ],
+        "risks": [
+          "Nižší kreativita v porovnání s ChatGPT nebo Claude.",
+          "Licenční omezení zakazují komerční použití generovaných obrázků."
+        ],
+        "comparison": "Jeho unikátní pozice je v absolutním důrazu na přesnost a citace. Pro rešerše je pravděpodobně nejlepším nástrojem na trhu. Pro kreativní brainstorming jsou vhodnější jiné alternativy."
+      }
     },
     {
       "id": "grok",
@@ -47,8 +123,28 @@
       "archetype": "Odvážný Inovátor",
       "summary": "Model s přístupem k datům v reálném čase ze sítě X, se specifickým humorem a ochotou riskovat.",
       "idealFor": "Analytici trendů a stratégové, kteří potřebují nefiltrovaný pohled na aktuální dění a nebojí se experimentovat.",
-      "watchOutFor": "Jeho osobnost a odpovědi nemusí být vhodné pro formální firemní komunikaci. Může být méně přesný.",
-      "strengths": { "marketing": 2, "analysis": 5, "automation": 3 }
+      "watchOutFor": "Jeho osobnost a odpovědi nemusí být vhodné pro formální firemní komunikaci.",
+      "strengths": { "marketing": 2, "analysis": 5, "automation": 3 },
+      "details": {
+        "key_abilities": [
+          "Specializace na pokročilé logické uvažování ('First-Principles Reasoning').",
+          "Unikátní a exkluzivní integrace s daty z platformy X (Twitter) v reálném čase.",
+          "Portfolio modelů pro různé účely (Heavy pro maximální výkon, Fast pro efektivitu).",
+          "Rozvíjející se multimodalita se zaměřením na generování videa (Grok Imagine)."
+        ],
+        "use_cases": [
+          "Analýza tržního sentimentu a sledování konkurence na sociálních sítích.",
+          "Modernizace a analýza staršího (legacy) kódu.",
+          "Hloubková analýza finančních výkazů a regulatorních dokumentů.",
+          "Vědecké a technické simulace v rámci R&D."
+        ],
+        "risks": [
+          "Absence generování statických obrázků (klíčové pro marketing).",
+          "Reputační riziko kvůli tendenci generovat kontroverzní nebo předpojatý obsah ('Spicy Mode')."
+        ],
+        "comparison": "Je to specializovaný nástroj pro experty na složité problémy. Vyniká v analýze sociálních médií a v úlohách vyžadujících hluboké logické uvažování. Pro běžnou firemní a marketingovou komunikaci je rizikový a méně vhodný."
+      }
     }
   ]
 }
+
